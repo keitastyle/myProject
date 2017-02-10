@@ -1,0 +1,92 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 11:16
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title',  Auth::user()->first_name . ' ' . Auth::user()->last_name)
+
+@section('content')
+
+    <div id="" class="profile-picture">
+        <span class="profile-picture rel-profile-picture" style="background-image: url({{ URL::asset('uploads/img/profile_pics/' . Auth::user()->picture) }});" >
+            <span class="update rel-profile-picture" data-toggle="modal" data-target="#update-profile-picture">
+                Editer
+            </span>
+        </span>
+        <div class="modal fade" tabindex="-1" role="dialog" id="update-profile-picture">
+            <form action="{{ url('profile/edit/picture') }}" method="POST" enctype="multipart/form-data" class="horizontal" name="picture">
+                {{ csrf_field() }}
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Photo de profil</h4>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <input name="media" type="file" accept="Images/*" class="upload" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <strong>Oups!</strong> Certains problèmes sont apparus.<br/>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <form action="{{ url('profile/edit') }}" method="POST" class="horizontal" name="general">
+            {!! csrf_field() !!}
+
+            <div class="col-md-10 col-md-offset-1">
+                <div class="form-group row">
+                    <label for="text" class="col-md-4 col-sm-6 control-label">Prénom :</label>
+                    <div class="col-md-5 col-sm-6">
+                        <input type="text" name="first_name" class="form-control" placeholder="Prénom" value="{{ Auth::user()->first_name }}"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="text" class="col-md-4 col-sm-6 control-label">Nom :</label>
+                    <div class="col-md-5 col-sm-6">
+                        <input type="text" name="last_name" class="form-control" placeholder="Nom" value="{{ Auth::user()->last_name }}"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="text" class="col-md-4 col-sm-6 control-label">Téléphone :</label>
+                    <div class="col-md-5 col-sm-6">
+                        <input type="text" name="phone" class="form-control" placeholder="Téléphone" value="{{ Auth::user()->phone }}"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-offset-4 col-sm-offset-6 col-md-5 col-sm-6">
+                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+@endsection
+
+@section('style-link')
+    <link href="{{ asset('assets/css/profile.css') }}" rel="stylesheet" />
+@endsection

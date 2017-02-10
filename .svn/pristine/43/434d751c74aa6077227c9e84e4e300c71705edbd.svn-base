@@ -1,0 +1,111 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 16:48
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', $task->title .' | '. $project->title)
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+        <li><a href="{{ url('/project/'.$project->id) }}">{{ $project->title }}</a></li>
+        <li><a href="{{ url('/project/'.$project->id.'/tasks') }}">Tâches</a></li>
+        <li><a href="{{ url('/project/'.$project->id.'/tasks/'.$task->id) }}">{{ $task->title }}</a></li>
+        <li class="active">Modification</li>
+    </ol>
+    <div class="row">
+        <form action="{{ url('/project/'.$project->id.'/tasks/'.$task->id.'/edit') }}" method="post" role="form" class="col-md-6">
+            {{ csrf_field() }}
+            <div>
+                <div class="form-group">
+                    <label for="titre">Titre</label>
+                    <input type="text" class="form-control" name="title" id="titre" placeholder="Titre" value="{{ $task->title }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5" placeholder="Description de la tâche" >{{ $task->description }}</textarea>
+                </div>
+
+                @if(Auth::user()->userable instanceof App\Mentor)
+                <div class="form-group">
+                    <label for="membres">Attribuée à</label>
+                    <select name="author_id" class="form-control selectize" placeholder="Membre">
+                        <option>Membre</option>
+                        @foreach($project->students as $s)
+                            <option value="{{ $s->id }}" @if($s->id == $task->author_id) selected @endif>{{ $s->user->first_name .' '. $s->user->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateD">Date de début</label>
+                    <input type="text" class="form-control datepicker" name="dateD" id="dateD" placeholder="jj/mm/aaaa" value="{{ $task->beginning_date->formatLocalized('%d/%m/%Y') }}" required>
+                </div>
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateF">Date de fin</label>
+                    <input type="text" class="form-control datepicker" name="dateF" id="dateD" placeholder="jj/mm/aaaa"  value="">
+                </div>
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </div>
+        </form>
+        <div class="col-md-6">
+            <h3>Modifier</h3>
+            @foreach($o_tasks as $t)
+                <?php
+
+                $progress = 0;
+                $class = 'progress-bar-primary';
+                if($t->ending_date){
+                    if(Carbon\Carbon::now() <= $t->ending_date  ){
+                        if($t->beginning_date->formatLocalized('%d/%m/%Y') != $t->ending_date->formatLocalized('%d/%m/%Y')){
+                            $progress = ceil(($t->beginning_date->diffInDays(Carbon\Carbon::now()) / $t->beginning_date->diffInDays($t->ending_date) ) * 100);
+                        }else{
+                            $progress = 100;
+                            $class = 'progress-bar-warning';
+                        }
+                    }else{
+                        $progress = 100;
+                        $class = 'progress-bar-danger';
+                    }
+                }
+                if($t->status == 3){
+                    $progress = 100;
+                    $class = 'progress-bar-success';
+                }
+                ?>
+                <div class="item">
+                    <div class="clearfix">
+                        <h4>
+                            <a href="{{ url('project/'.$t->project_id.'/tasks/'.$t->id.'/edit') }}">{{ $t->title }}</a>
+                            <small class="pull-right">{{ $progress }}%</small>
+                        </h4>
+
+                        <h5><small>par </small> {{ $t->author->user->first_name . ' ' . $t->author->user->last_name }}</h5>
+                        <p>
+                            {{ $t->description }}
+                        </p>
+                        <a href="#" >{{ count($t->files) }} fichiers</a>
+                        <br>
+                    </div>
+                    <div class="progress xs">
+                        <div class="progress-bar {{ $class }}" style="width: {{ $progress }}%;"></div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endsection

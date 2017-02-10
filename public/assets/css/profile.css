@@ -1,0 +1,91 @@
+.content{
+    font-family: 'Source Sans Pro',sans-serif;
+    font-size: 15px;
+}
+div.display{
+    padding: 20px 10px;
+}
+div.profile-picture{
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 50px;
+    padding-bottom: 50px;
+
+}
+.rel-profile-picture{
+    border-radius: 50%;
+    width: 180px;
+    height: 180px;
+}
+
+
+div.profile-picture span.profile-picture{
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #ccc;
+    background-size: 100% 100%;
+    background-position: 50% 50%;
+    transition: 0.5s ease;
+}
+div.profile-picture span.profile-picture:hover{
+    background-size: 120% 120%;
+}
+div.profile-picture img{
+    border-radius: 50%;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+}
+div.profile-picture .update{
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 48%;
+    font-size: 15px;
+    color: white;
+    background-color: rgba(45,53,60,0.6);
+    display: none;
+    transition: 0.5s;
+}
+div.profile-picture span.profile-picture:hover .update{
+    display: inline-block;
+}
+h4{
+    font-size: 1.3em;
+}
+h3.title {
+    text-transform: uppercase;
+    color: rgb(245, 156, 26);
+}
+h4.title {
+    color: rgb(45,53,60);
+}
+form {
+    padding: 0px;
+    margin: 0px;
+}
+.tab-content{
+    padding: 0px 15px;
+}
+.tab-content div.form-group{
+    display: block;
+    position: relative;
+    margin: 5px 0px;
+}
+.tab-content div.form-group{
+
+}
+.tab-content .form-profile .control-label{
+    font-weight: 400;
+    color:#707478
+}
+.tab-content .form-control{
+    margin-bottom: 10px;
+}
+.tab-content .form-profile{
+    margin-top: 35px;
+}
+
+

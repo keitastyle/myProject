@@ -1,0 +1,37 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 06/05/2016
+ * Time: 14:20
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Aucun projet'); ?>
+
+<?php $__env->startSection('style'); ?>
+    #navBarLeft{
+        display: none;
+    }
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        <!--
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        -->
+        Vous n'avez encore été assigné à aucun <strong>projet</strong>.<br>
+        Attendez qu'un encadreur vous ajoute à un projet.
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('jquery'); ?>
+    //<script>
+
+    //</script>
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

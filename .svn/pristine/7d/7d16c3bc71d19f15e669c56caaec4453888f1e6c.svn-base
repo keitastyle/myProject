@@ -1,0 +1,58 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'. $project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">Historique</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <tbody>
+                    <?php foreach($historics as $i): ?>
+                    <tr>
+                        <td>
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#">
+                                        <img class="media-object circle img-circle" src="<?php echo e(asset('uploads/img/profile_pics/' . $i->author->picture)); ?>" alt="..." width="40" height="40">
+                                    </a>
+                                </div>
+                                <div class="media-body media-middle">
+                                    <?php echo '<a href="#">'. $i->author->first_name . ' ' . $i->author->last_name . '</a> ' . $i->content; ?>
+
+                                    <span class="pull-right">
+                                        <?php echo e($i->created_at->diffForHumans()); ?>
+
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

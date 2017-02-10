@@ -1,0 +1,183 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li class="active"><?php echo e($project->title); ?></li>
+    </ol>
+
+            <h2 class="text-info"><?php echo e($project->title); ?></h2>
+            <h4>
+                <span class=""><?php echo e($project->theme); ?></span> |
+                <span class="text-muted"><?php echo e($project->type); ?></span>
+            </h4>
+            <div class="text-muted" style="">
+                <h5>
+                    <i class="glyphicon glyphicon-time"></i> du <?php echo e($project->beginning_date->formatLocalized('%d %B %Y')); ?>
+
+                    <?php if($project->ending_date != null): ?>
+                        au <?php echo e($project->ending_date->formatLocalized("%d %B %Y")); ?>
+
+                    <?php endif; ?>
+
+                </h5>
+                <h5>
+                    <i class="glyphicon glyphicon-user"></i> Encadrant <?php echo e($project->mentor->user->first_name .' '. $project->mentor->user->last_name); ?>
+
+                </h5>
+            </div>
+
+            <?php if(Auth::user()->userable instanceof App\Mentor): ?>
+                <div>
+                    <a type="submit" class="btn btn-info" style="margin: 5px 0px;" href="<?php echo e(url('project/'. $project->id . '/edit')); ?>">
+                        <i class="glyphicon glyphicon-pencil"></i> &nbsp;Editer
+                    </a>
+                    <!-- Suppression -->
+                    <button type="button" class="btn btn-danger" data-toggle="modal" role="dialog" data-target="#del_event">
+                        <i class="glyphicon glyphicon-trash"></i> &nbsp;Supprimer
+                    </button>
+
+                    <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<<<<<<< .mine                                    <h4 class="modal-title" id="myModalLabel">Suppression</h4>
+=======                                    <h4 style="color: #b67102;font-size:larger;font-family:'Lucida Grande'" class="modal-title" id="myModalLabel">Attention cette action est irreversible!!</h4>
+>>>>>>> .theirs                                </div>
+                                <div class="modal-body">
+                                    Etes-vous sur de vouloir supprimer ce projet ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                    <a class="btn btn-danger" style="" href="<?php echo e(url('project/'.$project->id.'/delete')); ?>">
+                                        oui
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+            <div class="">
+                <h4>Description</h4>
+                <p>
+                    <?php echo e($project->description); ?>
+
+                </p>
+            </div>
+            <br><br>
+        </div>
+        <div class="col-md-5 col-md-push-1">
+            <?php foreach($project->tasks as $t): ?>
+                <?php
+
+                $progress = 0;
+                $class = 'progress-bar-primary';
+                if($t->ending_date){
+                    if(Carbon\Carbon::now() <= $t->ending_date  ){
+                        if($t->beginning_date->formatLocalized('%d/%m/%Y') != $t->ending_date->formatLocalized('%d/%m/%Y')){
+                            $progress = ceil(($t->beginning_date->diffInDays(Carbon\Carbon::now()) / $t->beginning_date->diffInDays($t->ending_date) ) * 100);
+                        }else{
+                            $progress = 100;
+                            $class = 'progress-bar-warning';
+                        }
+                    }else{
+                        $progress = 100;
+                        $class = 'progress-bar-danger';
+                    }
+                }
+                if($t->status == 3){
+                    $progress = 100;
+                    $class = 'progress-bar-success';
+                }
+                ?>
+            <div>
+                <div>
+                    <div class="clearfix">
+                        <a href="<?php echo e(url('project/'. $project->id . '/tasks/'.$t->id)); ?>"><span class="pull-left"><?php echo e($t->title); ?></span></a>
+                        <small class="pull-right"><?php echo e($progress); ?>%</small>
+                    </div>
+                    <div class="progress xs" style="margin-top: 10px;">
+                        <div class="progress-bar <?php echo e($class); ?>" style="width: <?php echo e($progress); ?>%;"></div>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+            <?php if(count($project->tasks) > 3): ?>
+                <div>
+                    <div class="item" style="text-align: center;">
+                        <a href="<?php echo e(url('project/'. $project->id . '/tasks')); ?>">Voir tout</a>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <div>
+                <div class="item" style="text-align: center;">
+                    <a href="<?php echo e(url('project/'. $project->id . '/tasks/create')); ?>"><i class="fa fa-plus"></i> Nouvelle Tache</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat box -->
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+            <h3 class="box-title">Commentaires</h3>
+        </div>
+    </div>
+
+    <form action="<?php echo e(url('/project/'.$project->id . '/comment')); ?>" method="post">
+        <?php echo e(csrf_field()); ?>
+
+        <div class="box-footer">
+            <div class="input-group">
+                <input class="form-control" name="content" placeholder="Type message...">
+
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="box-body chat" id="chat-box">
+
+        <?php foreach($project->comments as $c): ?>
+            <div class="item">
+                <img src="<?php echo e(asset('uploads/img/profile_pics/' . $c->author->picture)); ?>" alt="user image" class="online">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> <?php echo e($c->created_at->diffForHumans(Carbon\Carbon::now())); ?></small>
+                        <?php echo e($c->author->first_name . ' ' . $c->author->last_name); ?>
+
+                    </a>
+                    <?php echo e($c->content); ?>
+
+                </p>
+            </div>
+        <?php endforeach; ?>
+
+    </div>
+
+    <!-- Modal -->
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

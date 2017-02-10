@@ -1,0 +1,117 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Rendez-vous'); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li class="active">Rendez-vous</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Filtrer
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Tous</a></li>
+                        <li><a href="#">A venir</a></li>
+                    </ul>
+
+                    <?php if(Auth::user()->userable instanceof App\Mentor): ?>
+                        <a href="<?php echo e(url('meeting/pending')); ?>" class="btn btn-default dropdown-toggle" type="button">
+                            En attente de validation
+                            <span class="label label-danger">5</span>
+                        </a>
+                        <a href="<?php echo e(url('meeting/create')); ?>" class="btn btn-default dropdown-toggle" type="button">
+                            <i class="fa fa-plus"></i>&nbsp;
+                            Nouveau
+                        </a>
+                    <?php endif; ?>
+                </div>
+
+                <div>
+                    <br>
+                    <?php foreach($meetings as $m): ?>
+                        <div class="item">
+
+                            <h4>
+                                Avec
+                                <?php foreach($m->students as $s): ?>
+                                    <?php echo e($s->user->first_name); ?> <?php echo e($s->user->last_name); ?> ,
+                                <?php endforeach; ?>
+                            </h4>
+
+                            <h6><?php echo e($m->project->title); ?></h6>
+                            <div class="row">
+                                <p class="col-sm-5">
+                                    <i class="fa fa-clock-o"></i> <?php echo e($m->date->formatLocalized("%A, %d %B %Y")); ?><br>
+                                    <?php echo e($m->location); ?>
+
+                                </p>
+                                <div class="col-sm-7">
+                                    <a href="<?php echo e(url('meeting/'.$m->id.'/edit')); ?>" class="btn btn-default dropdown-toggle" type="button">
+                                        <i class="fa fa-pencil"></i>&nbsp;
+                                        Modifier
+                                    </a>
+                                    <?php if(Auth::user()->userable instanceof App\Mentor ): ?>
+                                        <a href="<?php echo e(url('meeting/'.$m->id.'/delete')); ?>" class="btn btn-default dropdown-toggle" type="button">
+                                            <i class="glyphicon glyphicon-trash"></i>&nbsp;
+                                            Annuler
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('jquery'); ?>
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '<?php echo e(Carbon\Carbon::now()->formatLocalized('%Y-%m-%d')); ?>',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                        <?php foreach($meetings as $m): ?>
+                        {
+                        title: '<?php echo e($m->project->title); ?>',
+                        start: '<?php echo e($m->date->formatLocalized('%Y-%m-%d')); ?>'
+                    },
+                    <?php endforeach; ?>
+                ]
+            });
+
+        });
+
+        //</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

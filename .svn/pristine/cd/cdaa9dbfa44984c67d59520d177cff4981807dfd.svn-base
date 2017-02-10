@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8"/>
+
+</head>
+
+<body>
+<style>
+    body {
+        margin-left: 2cm;
+        margin-top: 1cm;
+        text-align: left;
+    }
+
+    .p-nom {
+        color: #935b01;
+        font-size: large;
+        margin-left: 3cm;
+    }
+
+    h2 {
+        color: #263238;
+    }
+
+    .titre {
+        color: #935b01;
+    }
+
+
+</style>
+<header>
+    <p><span class="p-nom"><?php echo e($project->title); ?></span></p>
+</header>
+<p style="margin-left: 2.02cm"> <?php echo e($project->title); ?> a été crée <i class="glyphicon glyphicon-time"></i>
+    le <?php echo e($project->created_at->formatLocalized('%d %B %Y')); ?>
+
+    par Monsieur <span class="encadrant"><?php echo e($project->mentor->user->first_name .' '. $project->mentor->user->last_name); ?></span>,
+    les etudiants <?php foreach($project->students as $s): ?>
+        <strong> <?php echo e($s->user->first_name . ' ' . $s->user->last_name); ?>,</strong>
+    <?php endforeach; ?>
+    travaillent sur ce projet
+</p>
+    <nav>
+        <p> L'objectif de <span class="titre"> <?php echo e($project->title); ?>: </span><br>
+            <?php echo e($project->description); ?>
+
+        </p>
+    </nav>
+        <?php if(count($project->tasks)>1): ?>
+        Les taches réalisées dans ce projet sont les suivantes:
+        <?php foreach($project->tasks as $t): ?>
+            <p><span class="titre"><?php echo e($t->title); ?></span><br>
+                réalisée par <strong><?php echo e($t->author->user->first_name . ' ' . $t->author->user->last_name); ?></strong><br>
+           <?php echo e($t->description); ?>
+
+           </p>
+<?php endforeach; ?>
+            <?php endif; ?>
+            <?php if(count($project->tasks)==1): ?>
+            <p><span class="titre"><?php echo e($t->title); ?></span> est l'unique tâche de ce project,elle a été <br>
+                réalisée par <strong><?php echo e($t->author->user->first_name . ' ' . $t->author->user->last_name); ?></strong><br>
+                <?php echo e($t->description); ?>
+
+            </p><?php endif; ?>
+        <?php if($project->tasks==NULL): ?>
+            <p>Aucune Tache n'a été est l'unique tâche de ce project,elle a été <br>
+                réalisée dans ce project.
+            </p>
+        <?php endif; ?>
+
+
+
+
+<footer>
+    <p>Copyright MyProject - Tous droits réservés<br/>
+</footer>
+</body>
+
+</html>

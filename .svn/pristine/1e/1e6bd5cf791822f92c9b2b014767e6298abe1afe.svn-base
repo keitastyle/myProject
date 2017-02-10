@@ -1,0 +1,92 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 22:21
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', 'Tâches | '. $project->title)
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+        <li><a href="{{ url('/project/'.$project->id) }}">{{ $project->title }}</a></li>
+        <li class="active">Taches</li>
+    </ol>
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Filtrer
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Achevées</a></li>
+                    <li><a href="#">En cours</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" class="form-control" placeholder="Rechercher">
+        </div>
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Trier
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Tire</a></li>
+                    <li><a href="#">Date de début</a></li>
+                    <li><a href="#">Date de de fin</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        @foreach($tasks as $t)
+        <div class="col-md-12">
+            <div class="item">
+                <div class="clearfix">
+                    <h4>
+                        <a href="{{ url('project/'.$project->id.'/tasks/'.$t->id) }}">{{ $t->title }}</a>
+                        <small class="pull-right">90%</small>
+                    </h4>
+
+                    <h5><small>par </small> {{ $t->author->user->first_name . ' ' . $t->author->user->last_name }}</h5>
+                    <p>
+                        {{ $t->description }}
+                    </p>
+                    @if($t->file!=null)
+                        <a href="{{ asset('uploads/taks/'.$t->file) }}" >
+                            <i class="fa fa-paperclip"></i> {{ $t->file }}
+                        </a>
+                    @endif
+                </div>
+                <div class="progress xs">
+                    <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+        <div class="col-md-12 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="{{ url('project/'.$project->id.'/tasks/create') }}" class="default">
+                    <h4>
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouvelle tache
+                    </h4>
+                </a>
+            </div>
+        </div>
+    </div>
+@endsection

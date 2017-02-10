@@ -1,0 +1,12 @@
+les tables
+users(id,first_name,last_name,email,phone,picture,userable_id,userable_type,password,remember_taken)
+tasks(id,project_id,author_id,title,description,beginning_date,ending_date,status,created_at,updated_at)
+membre(id,type,created_at)
+coordinateur(id,code_du_projet)
+project(id,chief_id,title,type,theme,description,beginning_date,ending_date,status,created_at,updated_at)
+notification(id,target_id,target_type,content,is_seen,created_at,updated_at)
+project_membres(membre_id,project_id)
+project_coordinateurs(coordinateurs_id,project_id)
+historic(id,project_id,author_id,content,created_at,updated_at)
+Files(id,author_id,target_id,task_id,title,link,cretaed_at,updated_at)
+comments(id,author_id,content,of_id,of_type,created_at,update_at)

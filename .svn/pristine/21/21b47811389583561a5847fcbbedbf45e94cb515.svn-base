@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Listeners;
+
+use Auth;
+use App\Events\FileWasUploaded;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Historic;
+
+class FileEventListener
+{
+    /**
+     * Create the event listener.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+
+    }
+
+    public function uploaded($event){
+        Historic::create([
+            'project_id' => $event->file->task->project->id,
+            'author_id' => Auth::user()->id,
+            'content' => 'a uploadé le fichier <a href="#">' . $event->file->title . '</a> à la tâche <a href="'. url('project/'. $event->file->task->project->id . '/tasks/'.$event->file->task->id) .'">' . $event->file->task->title . '</a>',
+        ]);
+    }
+
+
+    public function deleted($event){
+        Historic::create([
+            'project_id' => $event->file->task->project->id,
+            'author_id' => Auth::user()->id,
+            'content' => 'a supprimé le fichier <a href="#">' . $event->file->title . '</a> de la tâche <a href="'. url('project/'. $event->file->task->project->id . '/tasks/'.$event->file->task->id) .'">' . $event->file->task->title . '</a>',
+        ]);
+    }
+
+    public function subscribe($events)
+    {
+        $events->listen(
+            'App\Events\FileWasUploaded',
+            'App\Listeners\FileEventListener@uploaded'
+        );
+
+        $events->listen(
+            'App\Events\FileWasUpdated',
+            'App\Listeners\FileEventListener@updated'
+        );
+
+        $events->listen(
+            'App\Events\FileWasDeleted',
+            'App\Listeners\FileEventListener@deleted'
+        );
+
+
+    }
+}

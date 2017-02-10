@@ -1,0 +1,96 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 22:21
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Tâches | '. $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">Taches</li>
+    </ol>
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Filtrer
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Achevées</a></li>
+                    <li><a href="#">En cours</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" class="form-control" placeholder="Rechercher">
+        </div>
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Trier
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Tire</a></li>
+                    <li><a href="#">Date de début</a></li>
+                    <li><a href="#">Date de de fin</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <?php foreach($tasks as $t): ?>
+        <div class="col-md-12">
+            <div class="item">
+                <div class="clearfix">
+                    <h4>
+                        <a href="<?php echo e(url('project/'.$project->id.'/tasks/'.$t->id)); ?>"><?php echo e($t->title); ?></a>
+                        <small class="pull-right">90%</small>
+                    </h4>
+
+                    <h5><small>par </small> ..</h5>
+                    <p>
+                        <?php echo e($t->description); ?>
+
+                    </p>
+                    <?php if($t->file!=null): ?>
+                        <a href="<?php echo e(asset('uploads/taks/'.$t->file)); ?>" >
+                            <i class="fa fa-paperclip"></i> <?php echo e($t->file); ?>
+
+                        </a>
+                    <?php endif; ?>
+                </div>
+                <div class="progress xs">
+                    <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <div class="col-md-12 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="<?php echo e(url('project/'.$project->id.'/tasks/create')); ?>" class="default">
+                    <h4>
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouvelle tache
+                    </h4>
+                </a>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

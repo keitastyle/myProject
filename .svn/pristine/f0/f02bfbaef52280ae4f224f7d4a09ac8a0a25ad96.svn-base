@@ -1,0 +1,86 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 16:48
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id.'/tasks')); ?>">Tâches</a></li>
+        <li class="active">Nouvelle tache</li>
+    </ol>
+    <div class="row">
+        <form action="<?php echo e(url('/project/'.$project->id.'/tasks/create')); ?>" method="post" role="form" class="col-md-6">
+            <?php echo e(csrf_field()); ?>
+
+            <div>
+                <div class="form-group">
+                    <label for="titre">Titre</label>
+                    <input type="text" class="form-control" name="title" id="titre" placeholder="Titre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5" placeholder="Description de la tâche" ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="membres">Attribuée à</label>
+                    <select name="author_id" class="form-control selectize" placeholder="Membre">
+                        <option>Membre</option>
+                            <?php foreach($project->students as $s): ?>
+                            <option value="<?php echo e($s->id); ?>"><?php echo e($s->user->first_name .' '. $s->user->last_name); ?></option>
+                            <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dateD">Date de début</label>
+                    <input type="text" class="form-control datepicker" name="dateD" id="dateD" placeholder="jj/mm/aaaa" required>
+                </div>
+                <div class="form-group">
+                    <label for="dateF">Date de fin</label>
+                    <input type="text" class="form-control datepicker" name="dateF" id="dateD" placeholder="jj/mm/aaaa">
+                </div>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </div>
+        </form>
+        <div class="col-md-6">
+            <h3>Modifier</h3>
+            <?php foreach($tasks as $t): ?>
+            <div class="item">
+                <div class="clearfix">
+                    <h4>
+                        <a href="<?php echo e(url('project/'.$t->project_id.'/tasks/'.$t->id.'/edit')); ?>"><?php echo e($t->title); ?></a>
+                        <small class="pull-right">90%</small>
+                    </h4>
+
+                    <h5><small>par </small> ...</h5>
+                    <p>
+                        <?php echo e($t->description); ?>
+
+                    </p>
+                    <a href="#" ><?php echo e(count($t->files)); ?> fichiers</a>
+                    <br>
+                </div>
+                <div class="progress xs">
+                    <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

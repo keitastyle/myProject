@@ -1,0 +1,249 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $task->title .' | '. $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id.'/tasks')); ?>">Tâches</a></li>
+        <li class="active"><?php echo e($task->title); ?></li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-info"><?php echo e($task->title); ?></h2>
+            <div class="text-muted" style="">
+                <h5>
+                    <i class="glyphicon glyphicon-time"></i> du <?php echo e($task->beginning_date->formatLocalized("%d %B %Y")); ?>
+
+                    <?php if($task->ending_date != null): ?>
+                        au <?php echo e($task->ending_date->formatLocalized("%d %B %Y")); ?>
+
+                    <?php endif; ?>
+
+                </h5>
+                <h5 class="">
+                    <i class="glyphicon glyphicon-user"></i> Par <?php echo e($task->author->user->first_name . ' ' . $task->author->user->last_name); ?>
+
+                </h5>
+            </div>
+            <?php if(Auth::user()->userable instanceof App\Mentor or Auth::user()->userable->id == $task->author_id): ?>
+            <div>
+                <?php if(Auth::user()->userable->id == $task->author_id): ?>
+                <a type="submit" class="btn btn-warning" style="margin: 5px 0px;" href="<?php echo e(url('project/'.$project->id.'/tasks/'.$task->id.'/end')); ?>">
+                    <i class="glyphicon glyphicon-ok"></i> &nbsp;Terminé
+                </a>
+                <?php endif; ?>
+
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                        <?php if($task->file!=null): ?>
+                            Modifier un fichier
+                        <?php endif; ?>
+                        <?php if($task->file==null): ?>
+                            Ajouter un fichier
+                        <?php endif; ?>
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Uploader un Fichier</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="<?php echo e(url('project/'.$project->id.'/tasks/'.$task->id.'/file')); ?>" role="form" enctype="multipart/form-data">
+                                        <?php echo e(csrf_field()); ?>
+
+                                        <input type="file" name="media" /> <br>
+                                        <button type="submit²" class="btn btn-primary">Envoyer!</button>
+                                    </form>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+                <a class="btn btn-info" style="margin: 5px 0px;" href="<?php echo e(url('project/'.$project->id.'/tasks/'.$task->id.'/edit')); ?>">
+                    <i class="glyphicon glyphicon-pencil"></i> &nbsp;Editer
+                </a>
+                <!-- Suppression -->
+                <button type="button" class="btn btn-danger" data-toggle="modal" role="dialog" data-target="#del_event">
+                    <i class="glyphicon glyphicon-trash"></i> &nbsp;Supprimer
+                </button>
+
+                <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Suppréssion</h4>
+                            </div>
+                            <div class="modal-body">
+                                Etes-vous sur de vouloir supprimer cet cette tâche?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                <a class="btn btn-danger" style="" href="<?php echo e(url('project/'.$project->id.'/tasks/'.$task->id.'/delete')); ?>">
+                                Supprimer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <div class="">
+                <h4>Description</h4>
+                <p>
+                    <?php echo e($task->description); ?>
+
+                </p>
+            </div>
+            <div>
+                <?php if($task->file!=null): ?>
+                    <a href="<?php echo e(asset('uploads/files/'.$task->file)); ?>" >
+                        <i class="fa fa-paperclip"></i> <?php echo e($task->file); ?>
+
+                    </a>
+                    <?php if(Auth::user()->userable instanceof App\Mentor or Auth::user()->userable->id == $task->author->id): ?>
+                        <a data-toggle="modal" role="dialog" data-target="#deleteFile" >
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </a>
+                        <div class="modal fade" id="deleteFile" tabindex="-1" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Suppression du fichier</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        Etes-vous sur de vouloir supprimer ce Fichier?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                        <a class="btn btn-danger" style="" href="<?php echo e(url('project/'.$project->id.'/tasks/'.$task->id.'/file/delete')); ?>">
+                                            Supprimer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <br><br>
+            </div>
+            <div class="progress xs">
+                <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+            </div>
+            <br><br>
+        </div>
+        <div class="col-md-5 col-md-push-1">
+            <?php foreach($project->tasks as $t): ?>
+                <div>
+                    <div class="clearfix">
+                        <a href="<?php echo e(url('project/'. $project->id . '/tasks/'.$t->id)); ?>"><span class="pull-left"><?php echo e($t->title); ?></span></a>
+                        <small class="pull-right">90%</small>
+                    </div>
+                    <div class="progress xs" style="margin-top: 10px;">
+                        <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+            <?php if(count($project->tasks) > 3): ?>
+                <div>
+                    <div class="item" style="text-align: center;">
+                        <a href="<?php echo e(url('project/'. $project->id . '/tasks')); ?>">Voir tout</a>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Chat box -->
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+            <h3 class="box-title">Commentaires</h3>
+        </div>
+    </div>
+    <div class="box-body chat" id="chat-box">
+        <!-- chat item -->
+        <div class="item">
+            <img src="<?php echo e(asset('assets/img/users/user4-128x128.jpg')); ?>" alt="user image" class="online">
+
+            <p class="message">
+                <a href="#" class="name">
+                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 2:15</small>
+                    Mike Doe
+                </a>
+                I would like to meet you to discuss the latest news about
+                the arrival of the new theme. They say it is going to be one the
+                best themes on the market
+            </p>
+            <!-- /.attachment -->
+        </div>
+        <!-- /.item -->
+        <!-- chat item -->
+        <div class="item">
+            <img src="<?php echo e(asset('assets/img/users/user3-128x128.jpg')); ?>" alt="user image" class="offline">
+
+            <p class="message">
+                <a href="#" class="name">
+                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:15</small>
+                    Alexander Pierce
+                </a>
+                I would like to meet you to discuss the latest news about
+                the arrival of the new theme. They say it is going to be one the
+                best themes on the market
+            </p>
+        </div>
+        <!-- /.item -->
+        <!-- chat item -->
+        <div class="item">
+            <img src="<?php echo e(asset('assets/img/users/user2-160x160.jpg')); ?>" alt="user image" class="offline">
+
+            <p class="message">
+                <a href="#" class="name">
+                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:30</small>
+                    Susan Doe
+                </a>
+                I would like to meet you to discuss the latest news about
+                the arrival of the new theme. They say it is going to be one the
+                best themes on the market
+            </p>
+        </div>
+        <!-- /.item -->
+    </div>
+    <!-- /.chat -->
+    <div class="box-footer">
+        <div class="input-group">
+            <input class="form-control" placeholder="Type message...">
+
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-success"><i class="fa fa-plus"></i></button>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- /.box (chat box) -->
+    </div>
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

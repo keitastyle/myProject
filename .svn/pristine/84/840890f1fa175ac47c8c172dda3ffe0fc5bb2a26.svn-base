@@ -1,0 +1,72 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 27/05/2016
+ * Time: 15:01
+ */
+?>
+
+
+
+
+<?php $__env->startSection('title', $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'. $project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">Fichiers</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-12">
+            <?php foreach($project->tasks as $t): ?>
+                <?php if(count($t->files)>0): ?>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><?php echo e($t->title); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($t->files as $f): ?>
+                            <tr>
+                                <td>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object circle img-circle" src="<?php echo e(asset('uploads/img/profile_pics/' . $f->author->picture)); ?>" alt="..." width="40" height="40">
+                                            </a>
+                                        </div>
+                                        <div class="media-body media-middle">
+                                            <a href="<?php echo e(asset('uploads/files/'.$f->link)); ?>" >
+                                                <i class="fa fa-paperclip"></i> <?php echo e($f->title); ?>
+
+                                            </a>
+                                            <span class="pull-right">
+                                                <?php echo e($f->created_at->diffForHumans()); ?>
+
+                                            </span>
+                                            <br>
+                                            <span class="text-muted"><?php echo e($f->author->first_name . ' ' . $f->author->last_name); ?> </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

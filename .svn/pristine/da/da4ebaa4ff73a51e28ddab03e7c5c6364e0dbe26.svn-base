@@ -1,0 +1,98 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Meeting;
+use App\Student;
+use App\Mentor;
+use App\Project;
+use Illuminate\Http\Request;
+use Auth;
+
+use App\Http\Requests;
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+
+class MeetingController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+    }
+
+    public function Validator(array $data){
+        return Validator::make($data,[
+            'location'=>'required',
+        ]);
+    }
+    public function create(){
+
+
+        return view('meeting.create');
+    }
+    public function store(Request $request){
+
+        $validator=$this->Validator($request->all());
+        if(!$validator->fails()){
+            $meeting = Meeting::create([
+                'project_id' => $request->input('project_id'),
+                'date'=>$request->input('dateD'),
+                'location'=>$request->input('location'),
+                'status'=>'1',
+            ]);
+
+
+            foreach($request->input('students') as $s){
+                $meeting->students()->attach($s);
+            }
+            $meeting->save();
+
+        }
+        return redirect('/meeting/all');
+    }
+
+    public function index(){
+        if(Auth::user()->userable instanceof Mentor){
+            $projects = Project::where('mentor_id', '=', Auth::user()->userable->id)->get();
+            $l = array();
+            foreach($projects as $p){
+                array_push($l, $p->id);
+            }
+                $meeting = Meeting::whereIn('project_id', $l)->where('date', '>=', Carbon::now())->orderBy('date','asc')->get();
+        }
+        else{
+            $s = Auth::user()->userable;
+            $meeting = $s->meetings()->where('date', '>=', Carbon::now())->orderBy('date','asc')->get();
+        }
+
+        return view('meeting.index')->with([
+            'meetings' => $meeting,
+        ]);
+    }
+
+    public function pending(){
+        $meeting = Meeting::where('status', '=',1)->orderBy('date','asc')->get();
+        return view('meeting.pending')->with([
+           'meetings'=> $meeting,
+        ]);
+    }
+
+
+    public function edit($id){
+        $meeting = Meeting::find($id);
+        return view('meeting.edit')->with([
+            'meeting'=>$meeting,
+        ]);
+    }
+    public function update($id,Request $request){
+        $meeting = Meeting::find($id);
+        $meeting->update([
+            'date' => $request->input('dateD'),
+            'location' => $request->input('location'),
+        ]);
+        $meeting->save();
+        return redirect('/meeting/all');
+    }
+}

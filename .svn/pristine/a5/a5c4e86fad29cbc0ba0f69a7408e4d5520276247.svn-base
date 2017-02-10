@@ -1,0 +1,29 @@
+
+/**
+ * Created by PhpStorm.
+ * User: Abir
+ * Date: 11/05/2016
+ * Time: 10:02
+ */
+<!DOCTYPE html>
+<html>
+	<head>
+			<meta charset="utf-8"/>
+			<title>Page protégée par mot de passe</title>
+	</head>
+	<body>
+	<?php
+		if(isset ($_POST['mot_de_passe']) AND $_POST['mot_de_passe']=="najidabir")
+		{
+	      ?>
+<h1> Bienvenue dans la page officielle de la NASA<h1/>
+    <p>	</br> </br> Vous avez saisi le bon mot de passe voici les codes : YU78 HF89 FG5 SF87 SGH55. </br>Merci pour vore visite</p>
+    <?php
+    }
+    else
+    {
+        echo '<p> Impossible d afficher la page, votre mot de passe est incorrect!! </p>';
+    }
+    ?>
+    </body>
+    </html>

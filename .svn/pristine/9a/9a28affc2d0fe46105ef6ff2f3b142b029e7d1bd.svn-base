@@ -1,0 +1,98 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 16:48
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $task->title .' | '. $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id.'/tasks')); ?>">Tâches</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id.'/tasks/'.$task->id)); ?>"><?php echo e($task->title); ?></a></li>
+        <li class="active">Modification</li>
+    </ol>
+    <div class="row">
+        <form action="<?php echo e(url('/project/'.$project->id.'/tasks/'.$task->id.'/edit')); ?>" method="post" role="form" class="col-md-6">
+            <?php echo e(csrf_field()); ?>
+
+            <div>
+                <div class="form-group">
+                    <label for="titre">Titre</label>
+                    <input type="text" class="form-control" name="title" id="titre" placeholder="Titre" value="<?php echo e($task->title); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5" placeholder="Description de la tâche" >
+                         <?php echo e($task->description); ?>
+
+                    </textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="membres">Attribuée à</label>
+                    <select name="author_id" class="form-control selectize" placeholder="Membre">
+                        <option>Membre</option>
+                        <?php foreach($project->students as $s): ?>
+                            <option value="<?php echo e($s->id); ?>" <?php if($s->id == $task->author_id): ?> selected <?php endif; ?>><?php echo e($s->user->first_name .' '. $s->user->last_name); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateD">Date de début</label>
+                    <input type="text" class="form-control" name="dateD" id="dateD" placeholder="jj/mm/aaaa" value="<?php echo e($task->beginning_date->formatLocalized('%d/%m/%Y')); ?>" required>
+                </div>
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateF">Date de fin</label>
+                    <input type="text" class="form-control" name="dateF" id="dateD" placeholder="jj/mm/aaaa"  value="">
+                </div>
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </div>
+        </form>
+        <div class="col-md-6">
+            <h3>Modifier</h3>
+            <?php foreach($o_tasks as $t): ?>
+                <div class="item">
+                    <div class="clearfix">
+                        <h4>
+                            <a href="<?php echo e(url('project/'.$t->project_id.'/tasks/'.$t->id.'/edit')); ?>"><?php echo e($t->title); ?></a>
+                            <small class="pull-right">90%</small>
+                        </h4>
+
+                        <h5><small>par </small> <?php echo e($t->author->user->first_name . ' ' . $t->author->user->last_name); ?></h5>
+                        <p>
+                            <?php echo e($t->description); ?>
+
+                        </p>
+                        <?php if($t->file!=null): ?>
+                            <a href="<?php echo e(asset('uploads/taks/'.$t->file)); ?>" >
+                                <i class="fa fa-paperclip"></i> <?php echo e($t->file); ?>
+
+                            </a>
+                        <?php endif; ?>
+                        <br>
+                    </div>
+                    <div class="progress xs">
+                        <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

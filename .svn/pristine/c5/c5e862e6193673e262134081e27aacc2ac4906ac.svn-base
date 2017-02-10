@@ -1,0 +1,75 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 19:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Modifier rendez-vous'); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/meeting/all')); ?>">Rendez-vous</a></li>
+        <li class="active">Modifier</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-5">
+            <form action="<?php echo e(url('meeting/'. $meeting->id.'/edit')); ?>" method="post" class="col s12" role="form">
+                <?php echo e(csrf_field()); ?>
+
+                <div class="form-group">
+                   <?php echo e($meeting->project->title); ?>
+
+                </div>
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateD">Date</label>
+                    <input type="text" class="form-control datepicker" name="dateD" id="dateD" placeholder="jj/mm/aaaa" value="<?php echo e($meeting->date->formatLocalized('%d/%m/%Y')); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="inputWarning1">Lieu</label>
+                    <input type="text" name="location" class="form-control" value="<?php echo e($meeting->location); ?>">
+                </div>
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
+        </div>
+        <div class="col-md-7">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('jquery'); ?>
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '<?php echo e(Carbon\Carbon::now()->formatLocalized('%Y-%m-%d')); ?>',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                        <?php foreach($meetings as $m): ?>
+                        {
+                        title: '<?php echo e($m->project->title); ?>',
+                        start: '<?php echo e($m->date->formatLocalized('%Y-%m-%d')); ?>'
+                    },
+                    <?php endforeach; ?>
+                ]
+            });
+
+        });
+
+        //</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Listeners;
+
+use App\Events\FileWasUploaded;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class FileEventListener
+{
+    /**
+     * Create the event listener.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
+
+
+    public function subscribe($events)
+    {
+        $events->listen(
+            'App\Events\FileWasUploaded',
+            'App\Listeners\FileEventListener@uploaded'
+        );
+
+        $events->listen(
+            'App\Events\FileWasUpdated',
+            'App\Listeners\FileEventListener@updated'
+        );
+
+        $events->listen(
+            'App\Events\FileWasDeleted',
+            'App\Listeners\FileEventListener@deleted'
+        );
+
+
+    }
+}

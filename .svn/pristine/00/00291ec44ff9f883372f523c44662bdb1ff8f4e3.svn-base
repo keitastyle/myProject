@@ -1,0 +1,116 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 19:16
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', 'Titre projet')
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+        <li><a href="{{ url('/meeting/all') }}">Rendez-vous</a></li>
+        <li class="active">Validation</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Filtrer
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Tous</a></li>
+                        <li><a href="#">A venir</a></li>
+                    </ul>
+                    <a href="{{url('meeting/pending')}}" class="btn btn-default dropdown-toggle" type="button">
+                        En attente de validation
+                        <span class="label label-danger">5</span>
+                    </a>
+                    <a href="{{ url('meeting/create') }}" class="btn btn-default dropdown-toggle" type="button">
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouveau
+                    </a>
+                </div>
+
+                <div>
+                        <br>
+                        @foreach($meetings as $m)
+                            <div class="item">
+                                <h4>
+                                    Avec
+                                    @foreach($m->students as $s)
+                                        {{$s->user->first_name}} {{$s->user->last_name}} ,
+                                    @endforeach
+                                </h4>
+
+                                <h6>{{$m->project->title}}</h6>
+                                <div class="row">
+                                    <p class="col-sm-5">
+                                        <i class="fa fa-clock-o"></i> {{$m->date->formatLocalized("%A, %d %B %Y")}}<br>
+                                        {{$m->location}}
+                                    </p>
+                                    <div class="col-sm-7">
+                                        <a href="{{ url('meeting/'.$m->id.'/edit') }}" class="btn btn-default dropdown-toggle" type="button">
+                                            <i class="fa fa-pencil"></i>&nbsp;
+                                            Modifier
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+
+        @endsection
+
+@section('jquery')
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '{{ Carbon\Carbon::now()->formatLocalized('%Y-%m-%d') }}',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '{{ url('/meeting1/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addWeek()->formatLocalized('%Y-%m-%dT12:00:00') }}'
+                    },
+                    {
+                        title: 'Présentation Projet 1',
+                        url: '{{ url('/meeting/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addDays(2)->formatLocalized('%Y-%m-%d') }}',
+                        end: '{{ Carbon\Carbon::now()->addDays(4)->formatLocalized('%Y-%m-%d') }}'
+                    },
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '{{ url('/meeting/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addWeeks(2)->formatLocalized('%Y-%m-%dT12:00:00') }}'
+                    }
+                ]
+            });
+
+        });
+
+        //</script>
+@endsection

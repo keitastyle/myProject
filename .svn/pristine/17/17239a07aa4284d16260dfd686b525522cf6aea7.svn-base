@@ -1,0 +1,142 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 22:21
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Tâches | '. $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">Taches</li>
+    </ol>
+    <div class="row">
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Filtrer
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Achevées</a></li>
+                    <li><a href="#">En cours</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" class="form-control" placeholder="Rechercher">
+        </div>
+        <div class="col-xs-2">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Trier
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">Tire</a></li>
+                    <li><a href="#">Date de début</a></li>
+                    <li><a href="#">Date de de fin</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <?php foreach($tasks as $t): ?>
+            <?php
+
+            $progress = 0;
+            $class = 'progress-bar-primary';
+            if($t->ending_date){
+                if(Carbon\Carbon::now() <= $t->ending_date  ){
+                    if($t->beginning_date->formatLocalized('%d/%m/%Y') != $t->ending_date->formatLocalized('%d/%m/%Y')){
+                        $progress = ceil(($t->beginning_date->diffInDays(Carbon\Carbon::now()) / $t->beginning_date->diffInDays($t->ending_date) ) * 100);
+                    }else{
+                        $progress = 100;
+                        $class = 'progress-bar-warning';
+                    }
+                }else{
+                    $progress = 100;
+                    $class = 'progress-bar-danger';
+                }
+            }
+            if($t->status == 3){
+                $progress = 100;
+                $class = 'progress-bar-success';
+            }
+            ?>
+            <div class="col-md-12">
+                <div class="item">
+                    <div class="clearfix">
+                        <h4>
+                            <a href="<?php echo e(url('project/'.$project->id.'/tasks/'.$t->id)); ?>"><?php echo e($t->title); ?></a>
+                            <small class="pull-right"><?php echo e($progress); ?>%</small>
+                        </h4>
+
+                        <h5><small>par </small> <?php echo e($t->author->user->first_name . ' ' . $t->author->user->last_name); ?></h5>
+                        <p>
+                            <?php echo e($t->description); ?>
+
+                        </p>
+                        <?php if($t->file!=null): ?>
+                            <a href="<?php echo e(asset('uploads/files/'.$t->file)); ?>" >
+                                <i class="fa fa-paperclip"></i> <?php echo e($t->file); ?>
+
+                            </a>
+                            <?php if(Auth::user()->userable instanceof App\Mentor or Auth::user()->userable->id == $t->author_id): ?>
+                                <a data-toggle="modal" role="dialog" data-target="#del_file" >
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </a>
+                                <div class="modal fade" id="del_file" tabindex="-1" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="myModalLabel">Suppression du fichier</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                Etes-vous sur de vouloir supprimer ce Fichier?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                                <a class="btn btn-danger" style="" href="<?php echo e(url('project/'.$project->id.'/tasks/'.$t->id.'/file/delete')); ?>">
+                                                    Supprimer
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="progress xs">
+                        <div class="progress-bar <?php echo e($class); ?>" style="width: <?php echo e($progress); ?>%;"></div>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+        <div class="col-md-12 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="<?php echo e(url('project/'.$project->id.'/tasks/create')); ?>" class="default">
+                    <h4>
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouvelle tache
+                    </h4>
+                </a>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,185 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li class="active"><?php echo e($project->title); ?></li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-info"><?php echo e($project->title); ?></h2>
+            <h4>
+                <span class=""><?php echo e($project->theme); ?></span> |
+                <span class="text-muted"><?php echo e($project->type); ?></span>
+            </h4>
+            <div class="text-muted" style="">
+                <h5>
+                    <i class="glyphicon glyphicon-time"></i> du <?php echo e($project->beginning_date->formatLocalized('%d %B %Y')); ?>
+
+                    <?php if($project->ending_date != null): ?>
+                        au <?php echo e($project->ending_date->formatLocalized("%d %B %Y")); ?>
+
+                    <?php endif; ?>
+
+                </h5>
+                <h5>
+                    <i class="glyphicon glyphicon-user"></i> Encadrant <?php echo e($project->mentor->user->first_name .' '. $project->mentor->user->last_name); ?>
+
+                </h5>
+            </div>
+
+            <?php if(Auth::user()->userable instanceof App\Mentor): ?>
+                <div>
+                    <a type="submit" class="btn btn-info" style="margin: 5px 0px;" href="<?php echo e(url('project/'. $project->id . '/edit')); ?>">
+                        <i class="glyphicon glyphicon-pencil"></i> &nbsp;Editer
+                    </a>
+                    <!-- Suppression -->
+                    <button type="button" class="btn btn-danger" data-toggle="modal" role="dialog" data-target="#del_event">
+                        <i class="glyphicon glyphicon-trash"></i> &nbsp;Supprimer
+                    </button>
+
+                    <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Suppréssion</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Etes-vous sur de vouloir supprimer cet ce projet ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                    <a class="btn btn-danger" style="" href="#">
+                                        Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <div class="">
+                <h4>Description</h4>
+                <p>
+                    <?php echo e($project->description); ?>
+
+                </p>
+            </div>
+            <br><br>
+        </div>
+        <div class="col-md-5 col-md-push-1">
+            <?php foreach($project->tasks as $t): ?>
+            <div>
+                <div class="clearfix">
+                    <a href="<?php echo e(url('project/'. $project->id . '/tasks/'.$t->id)); ?>"><span class="pull-left"><?php echo e($t->title); ?></span></a>
+                    <small class="pull-right">90%</small>
+                </div>
+                <div class="progress xs" style="margin-top: 10px;">
+                    <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+            <?php if(count($project->tasks) > 3): ?>
+            <div>
+                <div class="item" style="text-align: center;">
+                <a href="<?php echo e(url('project/'. $project->id . '/tasks')); ?>">Voir tout</a>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div>
+                <div class="item" style="text-align: center;">
+                    <a href="<?php echo e(url('project/'. $project->id . '/tasks/create')); ?>"><i class="fa fa-plus"></i> Nouvelle Tache</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat box -->
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+            <h3 class="box-title">Commentaires</h3>
+            </div>
+        </div>
+        <div class="box-body chat" id="chat-box">
+            <!-- chat item -->
+            <div class="item">
+                <img src="<?php echo e(asset('assets/img/users/user4-128x128.jpg')); ?>" alt="user image" class="online">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 2:15</small>
+                        Mike Doe
+                    </a>
+                    I would like to meet you to discuss the latest news about
+                    the arrival of the new theme. They say it is going to be one the
+                    best themes on the market
+                </p>
+                <!-- /.attachment -->
+            </div>
+            <!-- /.item -->
+            <!-- chat item -->
+            <div class="item">
+                <img src="<?php echo e(asset('assets/img/users/user3-128x128.jpg')); ?>" alt="user image" class="offline">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:15</small>
+                        Alexander Pierce
+                    </a>
+                    I would like to meet you to discuss the latest news about
+                    the arrival of the new theme. They say it is going to be one the
+                    best themes on the market
+                </p>
+            </div>
+            <!-- /.item -->
+            <!-- chat item -->
+            <div class="item">
+                <img src="<?php echo e(asset('assets/img/users/user2-160x160.jpg')); ?>" alt="user image" class="offline">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:30</small>
+                        Susan Doe
+                    </a>
+                    I would like to meet you to discuss the latest news about
+                    the arrival of the new theme. They say it is going to be one the
+                    best themes on the market
+                </p>
+            </div>
+            <!-- /.item -->
+        </div>
+        <!-- /.chat -->
+        <div class="box-footer">
+            <div class="input-group">
+                <input class="form-control" placeholder="Type message...">
+
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /.box (chat box) -->
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

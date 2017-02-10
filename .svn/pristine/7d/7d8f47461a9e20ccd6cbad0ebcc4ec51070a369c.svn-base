@@ -1,0 +1,70 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 08/04/2016
+ * Time: 01:06
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Tableau de bord'); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li class="active">Accueil</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="calendar" style="position: relative; z-index: 99;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="<?php echo e(url('projects/all')); ?>" class="default">
+                    <h4>
+                        <i class="fa fa-list"></i>&nbsp;
+                        Tous les projets
+                    </h4>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="<?php echo e(url('project/create')); ?>" class="default">
+                    <h4>
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouveau projet
+                    </h4>
+                </a>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('jquery'); ?>
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '<?php echo e(Carbon\Carbon::now()->formatLocalized('%Y-%m-%d')); ?>',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                    <?php foreach($meetings as $m): ?>
+                    {
+                        title: '<?php echo e($m->project->title); ?>',
+                        start: '<?php echo e($m->date->formatLocalized('%Y-%m-%d')); ?>'
+                    },
+                    <?php endforeach; ?>
+                ]
+            });
+
+        });
+
+    //</script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -1,0 +1,83 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Titre projet'); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">Modifier</li>
+    </ol>
+    <div class="row">
+        <form action="<?php echo e(url('/project/'.$project->id.'/edit')); ?>" method="post" role="form" class="col-md-6">
+            <?php echo e(csrf_field()); ?>
+
+            <div class="form-group">
+                <label for="titre">Titre</label>
+                <input type="text" class="form-control" name="title" id="titre" placeholder="Titre" value="<?php echo e($project->title); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="theme">Thème</label>
+                <input type="text" class="form-control" name="theme" id="theme" placeholder="Thème" value="<?php echo e($project->theme); ?>" required>
+            </div>
+
+            <label >Type :</label>
+            <div class="form-group">
+                <select name="type" class="form-control">
+                    <option value="PFE" <?php if($project->type == 'PFE'): ?> selected <?php endif; ?>>PFE</option>
+                    <option value="Doctorat" <?php if($project->type == 'Doctorat'): ?> selected <?php endif; ?>>Doctorat</option>
+                    <option value="Autre" <?php if($project->type == 'Autre'): ?> selected <?php endif; ?>>Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5" placeholder="Description du projet" ><?php echo e($project->description); ?></textarea>
+            </div>
+            <div class="form-group">
+                <label for="dateD">Date de début</label>
+                <input type="text" class="form-control" name="dateD" id="dateD" placeholder="jj/mm/aaaa"  value="<?php echo e($project->beginning_date->formatLocalized("%d/%m/%Y")); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="dateF">Date de fin <em>Non requis</em></label>
+                <?php if($project->ending_date != null): ?>
+                    <input type="text" class="form-control datepicker" name="dateF" id="dateD" placeholder="jj/mm/aaaa"  value="<?php echo e($project->ending_date->formatLocalized("%d/%m/%Y")); ?>">
+                <?php else: ?>
+                    <input type="text" class="form-control datepicker" name="dateF" id="dateD" placeholder="jj/mm/aaaa"  value="<?php echo e($project->ending_date); ?>">
+                <?php endif; ?>
+            </div>
+            <button type="submit" class="btn btn-primary">Modifier</button>
+        </form>
+        <div class="col-md-6">
+            <h3>Modifier</h3>
+            <?php foreach($o_projects as $p): ?>
+                <div class="item">
+                    <a href="<?php echo e(url('project/1/edit')); ?>">
+                        <h4>
+                            <?php echo e($project->title); ?>
+
+                        </h4>
+                    </a>
+                    <h5>
+                        <?php echo e($project->theme); ?> <sup><?php echo e($project->type); ?></sup>
+                    </h5>
+                    <p>
+                        <?php echo e($project->description); ?>
+
+                    </p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

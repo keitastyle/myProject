@@ -1,0 +1,38 @@
+<?php
+
+namespace App;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    protected $morphClass = 'User';
+
+    protected $dates=['created_at', 'updated_at'];
+
+    protected $fillable = [
+        'first_name', 'last_name', 'email', 'phone', 'userable_id', 'userable_type', 'picture', 'password',
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    public function userable(){
+        return $this->morphTo();
+    }
+
+    public function comments(){
+        return $this->hasMany('App\Comment');
+    }
+
+    public function files()
+    {
+        return $this ->hasMany('App\File');
+    }
+
+    public function historics ()
+    {
+        return $this ->hasMany('App\Historic');
+    }
+}

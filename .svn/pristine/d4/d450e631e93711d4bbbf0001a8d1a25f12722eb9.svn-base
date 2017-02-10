@@ -1,0 +1,263 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', $project->title)
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+               <li class="active">{{ $project->title }}</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-6">
+    <h2 class="text-info">{{ $project->title }}</h2>
+    <h4>
+        <span class="">{{ $project->theme }}</span> |
+        <span class="text-muted">{{ $project->type }}</span>
+    </h4>
+    <div class="text-muted" style="">
+        <h5>
+            <i class="glyphicon glyphicon-time"></i> du {{ $project->beginning_date->formatLocalized('%d %B %Y') }}
+            @if($project->ending_date != null)
+                au {{ $project->ending_date->formatLocalized("%d %B %Y") }}
+            @endif
+        </h5>
+        <h5>
+            <i class="glyphicon glyphicon-user"></i>
+            Encadrant {{ $project->mentor->user->first_name .' '. $project->mentor->user->last_name }}
+        </h5>
+        <h5>
+            <span>{!! $project->getStatus() !!}</span>
+            <a href="{{ url('/project/'.$project->id .'/historic') }}">
+                        <span class="label label-default">
+                            <i class="glyphicon glyphicon-time"></i>
+                            Historique
+                        </span>
+            </a>
+            <a href="{{ url('/project/'.$project->id .'/files') }}" style="margin-left: 5px">
+                        <span class="label label-default">
+                            <i class="glyphicon glyphicon-file"></i>
+                            Fichiers
+                        </span>
+            </a>
+            <a href="{{url('project/'.$project->id.'/show')}}"  style="margin-left: 5px">
+                <span class="label label-default">
+                            <i class="glyphicon glyphicon-folder-close"></i>
+                           Fichers.PDf
+                        </span>
+            </a>
+
+
+
+        </h5>
+    </div>
+
+    @if(Auth::user()->userable instanceof App\Mentor)
+        <div>
+            @if( $project->status =='1')
+                <a type="submit" class="btn btn-success" style="...."
+                   href="{{ url('project/'.$project->id.'/end') }}">
+                    <i class="glyphicon glyphicon-ok"></i> &nbsp;Terminer
+                </a>
+            @endif
+            @if($project->status=='1')
+                    <a type="submit" class="btn btn-info" style="margin: 5px 0px;"
+                   href="{{ url('project/'. $project->id . '/edit') }}">
+                    <i class="glyphicon glyphicon-pencil"></i> &nbsp;Editer
+                </a>
+                    <a type="submit" class="btn btn-warning" style="margin: 5px 0px;"
+                   href="{{ url('project/'.$project->id.'/cancel') }}">
+                    <i class="glyphicon glyphicon-remove-sign"></i> &nbsp;Annuler
+                </a>
+                @endif
+                        <!--restauration-->
+                    @if($project->status=='2') <a type="button" class="btn btn-success" style="..."
+                                                  href="{{url('project/'.$project->id.'/restore')}}">Restaurer</a>
+                    @endif
+                        <!-- Suppression -->
+                <button type="button" class="btn btn-danger" data-toggle="modal" role="dialog" data-target="#del_event">
+                    <i class="glyphicon glyphicon-trash"></i> &nbsp;Supprimer
+                </button>
+
+
+                <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 style="color: #b67102;font-size:larger;font-family:'Lucida Grande'"
+                                    class="modal-title" id="myModalLabel">
+                                    Attention cette action est irreversible!!</h4>
+
+                    <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                  <h4 class="modal-title" id="myModalLabel">Suppression</h4>
+                                   <h4 style="color: #b67102;font-size:larger;font-family:'Lucida Grande'" class="modal-title" id="myModalLabel">Attention cette action est irreversible!!</h4>
+                             </div>
+                                <div class="modal-body">
+                                    Etes-vous sur de vouloir supprimer ce projet ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                    <a class="btn btn-danger" style="" href="{{url('project/'.$project->id.'/delete')}}">
+                                        oui
+                                    </a>
+                                </div>
+
+                    <div class="modal fade" id="del_event" tabindex="-1" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Suppression</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Etes-vous sur de vouloir supprimer ce projet ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                    <a class="btn btn-danger" style="" href="{{url('project/'.$project->id.'/delete')}}">
+                                        oui
+                                    </a>
+                                </div>
+
+                            </div>
+                            <div class="modal-body">
+                                Etes-vous sûr de vouloir supprimer ce projet ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                <a class="btn btn-danger" style="" href="{{url('project/'.$project->id.'/delete')}}">
+                                    oui
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+    @endif
+    <div class="" style="margin-top: 25px">
+        <h4>Description</h4>
+
+        <p>
+            {{ $project->description }}
+        </p>
+    </div>
+    <br><br>
+    </div>
+    <div class="col-md-5 col-md-push-1">
+        @foreach($project->tasks as $t)
+            <?php
+
+            $progress = 0;
+            $class = 'progress-bar-primary';
+            if ($t->ending_date) {
+                if (Carbon\Carbon::now() <= $t->ending_date) {
+                    if ($t->beginning_date->formatLocalized('%d/%m/%Y') != $t->ending_date->formatLocalized('%d/%m/%Y')) {
+                        $progress = ceil(($t->beginning_date->diffInDays(Carbon\Carbon::now()) / $t->beginning_date->diffInDays($t->ending_date)) * 100);
+                    } else {
+                        $progress = 100;
+                        $class = 'progress-bar-warning';
+                    }
+                } else {
+                    $progress = 100;
+                    $class = 'progress-bar-danger';
+                }
+            }
+            if ($t->status == 3) {
+                $progress = 100;
+                $class = 'progress-bar-success';
+            }
+            ?>
+            <div>
+                <div>
+                    <div class="clearfix">
+                        <a href="{{ url('project/'. $project->id . '/tasks/'.$t->id) }}"><span
+                                    class="pull-left">{{ $t->title }}</span></a>
+                        <small class="pull-right">{{ $progress }}%</small>
+                    </div>
+                    <div class="progress xs" style="margin-top: 10px;">
+                        <div class="progress-bar {{ $class }}" style="width: {{ $progress }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+        @if(count($project->tasks) > 3)
+            <div>
+                <div class="item" style="text-align: center;">
+                    <a href="{{url('project/'. $project->id . '/tasks')}}">Voir tout</a>
+                </div>
+            </div>
+        @endif
+        @if($project->status==1)
+            <div>
+                <div class="item" style="text-align: center;">
+                    <a href="{{url('project/'. $project->id . '/tasks/create')}}"><i class="fa fa-plus"></i> Nouvelle
+                        Tache</a>
+                </div>
+            </div>@endif
+    </div>
+    </div>
+
+    <!-- Chat box -->
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+
+            <h3 class="box-title">Commentaires</h3>
+        </div>
+    </div>
+
+    <form action="{{ url('/project/'.$project->id . '/comment') }}" method="post">
+        {{ csrf_field() }}
+        <div class="box-footer">
+            <div class="input-group">
+                <input class="form-control" name="content" placeholder="Type message...">
+
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="box-body chat" id="chat-box">
+
+        @foreach($project->comments as $c)
+            <div class="item">
+                <img src="{{ asset('uploads/img/profile_pics/' . $c->author->picture) }}" alt="user image"
+                     class="online">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i
+                                    class="fa fa-clock-o"></i> {{ $c->created_at->diffForHumans(Carbon\Carbon::now()) }}
+                        </small>
+                        {{ $c->author->first_name . ' ' . $c->author->last_name }}
+                    </a>
+                    {{ $c->content }}
+                </p>
+            </div>
+        @endforeach
+
+    </div>
+
+    <!-- Modal -->
+
+@endsection

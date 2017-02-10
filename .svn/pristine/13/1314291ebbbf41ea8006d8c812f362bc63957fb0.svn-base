@@ -1,0 +1,96 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', 'Titre projet')
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+        <li><a href="{{ url('/meeting/all') }}">Rendez-vous</a></li>
+        <li class="active">Nouveau</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-5">
+            <form action="{{url('meeting/create')}}" method="post" role="form" class="col s12">
+                {{csrf_field()}}
+                <div class="form-group">
+                    <select name="project_id" class="form-control">
+                        @foreach(App\Project::where('mentor_id', '=', Auth::user()->userable->id)->get()  as $project)
+                            <option value="{{ $project->id }}">{{$project->title}}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="membres">Attribuée à</label>
+                    <select name="students[]" class="form-control selectize-add" placeholder="Membre" multiple>
+                        <option>Membre</option>
+                        @foreach(App\Student::all() as $s)
+                            <option value="{{ $s->id }}">{{ $s->user->first_name .' '. $s->user->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateD">Date</label>
+                        <input type="text" class="form-control" name="dateD" id="dateD" placeholder="jj/mm/aaaa" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="inputWarning1">Lieu</label>
+                    <input name="location" type="text" class="form-control" >
+                </div>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </form>
+        </div>
+        <div class="col-md-7">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+@endsection
+
+@section('jquery')
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '{{ Carbon\Carbon::now()->formatLocalized('%Y-%m-%d') }}',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '{{ url('/meeting1/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addWeek()->formatLocalized('%Y-%m-%dT12:00:00') }}'
+                    },
+                    {
+                        title: 'Présentation Projet 1',
+                        url: '{{ url('/meeting/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addDays(2)->formatLocalized('%Y-%m-%d') }}',
+                        end: '{{ Carbon\Carbon::now()->addDays(4)->formatLocalized('%Y-%m-%d') }}'
+                    },
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '{{ url('/meeting/1') }}',
+                        start: '{{ Carbon\Carbon::now()->addWeeks(2)->formatLocalized('%Y-%m-%dT12:00:00') }}'
+                    }
+                ]
+            });
+
+        });
+
+        //</script>
+@endsection

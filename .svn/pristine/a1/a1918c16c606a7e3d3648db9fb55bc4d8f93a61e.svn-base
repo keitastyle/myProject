@@ -1,0 +1,273 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Events\FileWasDeleted;
+use App\Events\FileWasUploaded;
+use Illuminate\Http\Request;
+use Auth;
+use Event;
+use App\Events\TaskWasCreated;
+use App\Events\TaskWasUpdated;
+use App\Events\TaskWasDeleted;
+use App\Events\TaskEnded;
+use App\Http\Requests;
+use App\Task;
+use App\Project;
+use App\File;
+use Carbon\Carbon;
+use Validator;
+
+
+class TaskController extends Controller
+{
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function validator(array $data)
+    {
+        return Validator::make($data, [
+            'author_id' => 'required',
+            'title' => 'required',
+            'description' => 'required',
+        ]);
+    }
+
+    public function create($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->take(3)->get();
+        return view('task.create')->with([
+            'tasks' => $tasks,
+            'project' => $project,
+        ]);
+    }
+
+    public function store($id, Request $request)
+    {
+        $validator = $this->validator($request->all());
+        if (!$validator->fails()) {
+            $task = Task::create([
+                'project_id' => $id,
+                'author_id' => $request->input('author_id'),
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'beginning_date' => $request->input('dateD'),
+                'status' => '1',
+            ]);
+            if ($request->input('dateF') != "") {
+                if ($request->input('dateF') >= $request->input('dateD')) {
+                    $task->ending_date = $request->input('dateF');
+                    $task->save();
+                }
+            }
+
+            Event::fire(new TaskWasCreated($task));
+
+            return redirect('project/' . $id . '/tasks/' . $task->id);
+        }
+        return redirect()->back()->withErrors($validator);
+    }
+
+    public function index($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->orderBy('beginning_date', 'desc')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks
+        ]);
+    }
+
+    public function search(Request $data, $id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('title', 'like', '%' . $data->input('search') . '%')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks
+        ]);
+    }
+
+    public function edit($id, $task_id)
+    {
+        $project = Project::find($id);
+        $o_tasks = Task::where('project_id', '=', $id)->get();
+        $task = Task::find($task_id);
+        return view('task.edit')->with([
+            'project' => $project,
+            'task' => $task,
+            'o_tasks' => $o_tasks,
+
+        ]);
+    }
+
+    public function update($id, $task_id, Request $data)
+    {
+        $task = Task::find($task_id);
+        $task->update([
+            'project_id' => $id,
+            'author_id' => $data->input('author_id'),
+            'title' => $data->input('title'),
+            'description' => $data->input('description'),
+            'beginning_date' => $data->input('dateD'),
+            'status' => '1',
+        ]);
+        $task->save();
+
+        if ($data->input('dateF') >= $data->input('dateD')) {
+            $task->ending_date = $data->input('dateF');
+            $task->save();
+        }
+
+        Event::fire(new TaskWasUpdated($task));
+
+        return redirect('project/' . $id . '/tasks/' . $task->id);
+    }
+
+    public function delete($id, $task_id)
+    {
+        $task = Task::find($task_id);
+        foreach($task->files as $f){
+            unlink('uploads/files/'.$f->link);
+            $f->delete();
+        }
+        $task->delete();
+        Event::fire(new TaskWasDeleted($task));
+        return redirect('project/' . $id . '/tasks');
+    }
+
+    public function show($id, $task_id)
+    {
+        $project = Project::find($id);
+        $task = Task::find($task_id);
+        $o_tasks = Task::where('project_id', '=', $id)->take(3)->get();
+
+        $task->description = nl2br($task->description);
+        $task->comments = $task->comments()->orderBy('created_at', 'desc')->get();
+        return view('task.view')->with([
+            'project' => $project,
+            'task' => $task,
+            'o_tasks' => $o_tasks,
+        ]);
+    }
+
+    public function byTitle($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->orderBy('title','asc')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function sortEnd($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->orderBy('ending_date','asc')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function sortBeg($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->orderBy('Beginning_date','asc')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function showPending($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->where('status','=',1)->orderBy('title','asc')->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function showEnded($id)
+    {
+        $project = Project::find($id);
+        $tasks = Task::where('project_id', '=', $id)->where('status','=',3)->get();
+        return view('task.index')->with([
+            'project' => $project,
+            'tasks' => $tasks,
+        ]);
+    }
+
+
+    public function uploadfile($id, $task_id, Request $data)
+    {
+        if ($data->hasFile('media')) {
+            if ($data->file('media')->isValid()) {
+                $dest = 'uploads/files/';
+                $title = $data->file('media')->getClientOriginalName();
+                $ext = $data->file('media')->getClientOriginalExtension();
+                $filename = 'task' . '-' . Carbon::now()->timestamp . "." . $ext;
+                $data->file('media')->move($dest, $filename);
+                // Modification de la tache
+                $task = Task::find($task_id);
+                $f = File::create([
+                    'author_id' => Auth::user()->id,
+                    'task_id' => $task->id,
+                    'title' => $title,
+                    'link' => $filename,
+                ]);
+
+                $task->files()->save($f);
+                $task->save();
+                Event::fire(new FileWasUploaded($f));
+            }
+
+        }
+        return redirect()->back();
+    }
+
+    public function deleteFile($id, $task_id, $file_id)
+    {
+        $file = File::find($file_id);
+        Event::fire(new FileWasDeleted($file));
+        $file->delete();
+        return redirect()->back();
+        //return redirect('project/'.$id.'/tasks'.$task_id.'/');
+    }
+
+    public function endTask($id, $task_id)
+    {
+        $task = Task::find($task_id);
+        $task->status = '2';
+        $task->save();
+        Event::fire(new TaskEnded($task));
+        return redirect('project/' . $id . '/tasks/' . $task_id);
+
+    }
+
+    public function validateTask($id, $task_id)
+    {
+        $task = Task::find($task_id);
+        $task->status = '3';
+        $task->save();
+        return redirect('project/' . $id . '/tasks/' . $task_id);
+
+    }
+
+    public function cancelEnd($id, $task_id)
+    {
+        $task = Task::find($task_id);
+        $task->status = '1';
+        $task->save();
+        return redirect('project/' . $id . '/tasks/' . $task_id);
+
+    }
+
+}

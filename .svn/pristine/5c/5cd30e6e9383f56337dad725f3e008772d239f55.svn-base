@@ -1,0 +1,38 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
+class Task extends Model
+{
+    protected $fillable = ['project_id', 'author_id', 'title', 'description', 'beginning_date', 'ending_date', 'file', 'status'];
+
+    protected $dates = [
+        'beginning_date', 'ending_date', 'created_at', 'updated_at'
+    ];
+
+    public function setBeginningDateAttribute($value){
+        $this->attributes['beginning_date'] = Carbon::createFromFormat('d/m/Y', $value);
+    }
+
+    public function setEndingDateAttribute($value){
+        $this->attributes['ending_date'] = Carbon::createFromFormat('d/m/Y', $value);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo('App\Project');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo('App\Student');
+    }
+
+    public function comments(){
+        return $this->morphMany('App\Comment', 'of');
+    }
+
+}

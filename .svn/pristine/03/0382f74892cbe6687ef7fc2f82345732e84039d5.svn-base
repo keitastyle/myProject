@@ -1,0 +1,113 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 22:21
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Tâches | '. $project->title); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/project/'.$project->id)); ?>"><?php echo e($project->title); ?></a></li>
+        <li class="active">
+            <a href="<?php echo e(url('/project/'.$project->id.'/tasks')); ?>" style="color: #777;">Taches</a>
+            <form name="search" method="post" action="<?php echo e(url('/project/'.$project->id.'/tasks/search')); ?>" style="display: inline;">
+                <?php echo csrf_field(); ?>
+
+                <input type="text" name="search" class="form-control breadcrumb-search" placeholder="Rechercher">
+            </form>
+        </li>
+    </ol>
+    <div >
+        <div class="dropdown" style="display: inline-block;">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Filtrer
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="#">Achevées</a></li>
+                <li><a href="#">En cours</a></li>
+            </ul>
+        </div>
+        <div class="dropdown" style="display: inline-block;margin-left: 15px;">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Trier
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="#">Tire</a></li>
+                <li><a href="#">Date de début</a></li>
+                <li><a href="#">Date de de fin</a></li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <?php foreach($tasks as $t): ?>
+            <?php
+
+            $progress = 0;
+            $class = 'progress-bar-primary';
+            if($t->ending_date){
+                if(Carbon\Carbon::now() <= $t->ending_date  ){
+                    if($t->beginning_date->formatLocalized('%d/%m/%Y') != $t->ending_date->formatLocalized('%d/%m/%Y')){
+                        $progress = ceil(($t->beginning_date->diffInDays(Carbon\Carbon::now()) / $t->beginning_date->diffInDays($t->ending_date) ) * 100);
+                    }else{
+                        $progress = 100;
+                        $class = 'progress-bar-warning';
+                    }
+                }else{
+                    $progress = 100;
+                    $class = 'progress-bar-danger';
+                }
+            }
+            if($t->status == 3){
+                $progress = 100;
+                $class = 'progress-bar-success';
+            }
+            ?>
+            <div class="col-md-12">
+                <div class="item">
+                    <div class="clearfix">
+                        <h4>
+                            <a href="<?php echo e(url('project/'.$project->id.'/tasks/'.$t->id)); ?>"><?php echo e($t->title); ?></a>
+                            <small class="pull-right"><?php echo e($progress); ?>%</small>
+                        </h4>
+
+                        <h5><small>par </small> <?php echo e($t->author->user->first_name . ' ' . $t->author->user->last_name); ?></h5>
+                        <p>
+                            <?php echo e($t->description); ?>
+
+                        </p>
+                        <a href="#" ><?php echo e(count($t->files)); ?> fichiers</a>
+                    </div>
+                    <div class="progress xs">
+                        <div class="progress-bar <?php echo e($class); ?>" style="width: <?php echo e($progress); ?>%;"></div>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+        <div class="col-md-12 col-sm-6" style="margin-top: 20px;">
+            <div class="item" style="">
+                <a href="<?php echo e(url('project/'.$project->id.'/tasks/create')); ?>" class="default">
+                    <h4>
+                        <i class="fa fa-plus"></i>&nbsp;
+                        Nouvelle tache
+                    </h4>
+                </a>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

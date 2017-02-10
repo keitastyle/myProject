@@ -1,0 +1,77 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 00:25
+ */
+?>
+
+@extends('layouts.master')
+
+@section('title', 'Titre projet')
+
+@section('style-link')
+    <link rel="stylesheet" href="{{ asset('assets/css/project.css') }}">
+@endsection
+
+@section('content')
+    <ol class="breadcrumb">
+        <li><a href="{{ url('/') }}">Accueil</a></li>
+        <li><a href="{{ url('/project/1') }}">Titre Projet</a></li>
+        <li class="active">Historique</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#">
+                                        <img class="media-object circle img-circle" src="{{ asset('assets/img/users/user2-160x160.jpg') }}" alt="..." width="40" height="40">
+                                    </a>
+                                </div>
+                                <div class="media-body media-middle">
+                                    Joel a uploadé un fichier sur la tâche <a href="{{ url('project/1/tasks/1') }}" />Titre tache</a> du projet <a href="{{ url('project/1') }}"/>Titre Projet</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#">
+                                        <img class="media-object circle img-circle" src="{{ asset('assets/img/users/user2-160x160.jpg') }}" alt="..." width="40" height="40">
+                                    </a>
+                                </div>
+                                <div class="media-body media-middle">
+                                    Joel a moditifier la tache <a href="{{ url('project/1/tasks/1') }}" />Titre tache</a> du projet <a href="{{ url('project/1') }}"/>Titre Projet</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#">
+                                        <img class="media-object circle img-circle" src="{{ asset('assets/img/users/user1-128x128.jpg') }}" alt="..." width="40" height="40">
+                                    </a>
+                                </div>
+                                <div class="media-body media-middle">
+                                    Pr. Slimane Assiri vous a ajouté au projet <a href="{{ url('project/1') }}"/>Titre Projet</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+@endsection
+

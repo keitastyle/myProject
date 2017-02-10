@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Auth;
+use App\Http\Requests;
+use App\Student;
+use App\Mentor;
+use App\User;
+use App\Project;
+
+class HomeController extends Controller
+{
+    public function home(){
+        if(Auth::check()){
+            return redirect('/dashboard');
+        }
+        return view('welcome');
+    }
+
+    public function dashboard(){
+        if(Auth::user()->userable instanceof Mentor){
+            return view('dashboard');
+        }
+        if(Auth::user()->userable->project != null){
+            $project = Project::find(Auth::user()->userable->project->id);
+            return view('project.view')->with([
+                    'project' => $project
+            ]);
+        }
+        return view('default');
+    }
+
+    public function historic(){
+        return view('historic');
+    }
+}

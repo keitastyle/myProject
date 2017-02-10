@@ -1,0 +1,86 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Joel
+ * Date: 12/04/2016
+ * Time: 19:25
+ */
+?>
+
+
+
+<?php $__env->startSection('title', 'Titre projet'); ?>
+
+<?php $__env->startSection('style-link'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/project.css')); ?>">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+    <ol class="breadcrumb">
+        <li><a href="<?php echo e(url('/')); ?>">Accueil</a></li>
+        <li><a href="<?php echo e(url('/meeting/all')); ?>">Rendez-vous</a></li>
+        <li class="active">Moifier</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-5">
+            <form class="col s12">
+                <div class="form-group">
+                    Projet 1
+                </div>
+                <div class="form-group">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <label for="dateD">Date</label>
+                    <input type="text" class="form-control" name="dateD" id="dateD" placeholder="jj/mm/aaaa" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="inputSuccess1">Motif</label>
+                    <textarea rows="2" class="form-control" ></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="inputWarning1">Lieu</label>
+                    <input type="text" class="form-control" >
+                </div>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </form>
+        </div>
+        <div class="col-md-7">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('jquery'); ?>
+    //<script>
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                defaultDate: '<?php echo e(Carbon\Carbon::now()->formatLocalized('%Y-%m-%d')); ?>',
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '<?php echo e(url('/meeting1/1')); ?>',
+                        start: '<?php echo e(Carbon\Carbon::now()->addWeek()->formatLocalized('%Y-%m-%dT12:00:00')); ?>'
+                    },
+                    {
+                        title: 'Présentation Projet 1',
+                        url: '<?php echo e(url('/meeting/1')); ?>',
+                        start: '<?php echo e(Carbon\Carbon::now()->addDays(2)->formatLocalized('%Y-%m-%d')); ?>',
+                        end: '<?php echo e(Carbon\Carbon::now()->addDays(4)->formatLocalized('%Y-%m-%d')); ?>'
+                    },
+                    {
+                        title: 'Rendez-vous avec Joel',
+                        url: '<?php echo e(url('/meeting/1')); ?>',
+                        start: '<?php echo e(Carbon\Carbon::now()->addWeeks(2)->formatLocalized('%Y-%m-%dT12:00:00')); ?>'
+                    }
+                ]
+            });
+
+        });
+
+        //</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
